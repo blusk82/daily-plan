@@ -100,6 +100,8 @@ export type Recovery = 'green' | 'yellow' | 'red';
 export interface Settings {
   times: Record<MealSlot | SessionSlot, HHMM>; baseKcal: number; higherBurnKcal: number; shopDay: number;
   stapleIds: string[]; lastBackupAt?: string; setupDone: boolean;
+  /** When setup finished; stands in for the last backup until the first one. */
+  setupAt?: string;
 }
 
 export const slotKey = (date: ISODate, slot: MealSlot) => `${date}|${slot}`;

@@ -5,7 +5,7 @@ export function emptyOverlay(): UserOverlay {
 }
 
 /**
- * The library the app works from: the imported pack plus Ben's own overlay.
+ * The library the app works from: the imported pack plus your own overlay.
  * Hidden and retired recipes both stay (planners skip them) so existing
  * plans can still show them.
  */

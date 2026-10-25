@@ -3,3 +3,6 @@ dist
 .superpowers/
 *.local
 coverage
+
+# Personal design notes stay on this computer only
+docs/

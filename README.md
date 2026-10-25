@@ -5,16 +5,14 @@ A personal, phone-first web app for the day's meals, rehab exercise and shopping
 - **Today:** a timeline of meals, exercise sessions, shopping trips and prep jobs (defrost, soak). Tap to tick. Tap ✕ to record why something didn't happen.
 - **Week:** on Sunday the app proposes next week. Swap, lock or move anything, then confirm. If you don't plan, the app's default plan is used.
 - **Shop / Pantry:** shopping trips built from the plan. "Use it up" items get used first. Staples never go on the list.
-- **More:** appointment summary (for physio, osteo or podiatrist), library, settings and backup.
-
-Design: [`docs/2026-10-25-daily-plan-design.md`](docs/2026-10-25-daily-plan-design.md) · Build plan: [`docs/2026-10-25-daily-plan-build-plan.md`](docs/2026-10-25-daily-plan-build-plan.md)
+- **More:** appointment summary (to show your practitioners), library, settings and backup.
 
 ## Develop
 
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # unit + UI tests (Vitest, jsdom, Brisbane timezone)
+npm test           # unit + UI tests (Vitest, jsdom, fixed UTC+10 timezone)
 npm run build      # production build with service worker in dist/
 ```
 

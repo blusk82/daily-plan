@@ -1,6 +1,6 @@
 import { todayLocal, addDays, weekStartOf, planningWeekStart, addMinutes, weekday, datesOfWeek, compareDT } from '../../src/domain/dates';
 
-test('todayLocal uses local date, not UTC (Brisbane 06:30 = UTC previous day)', () => {
+test('todayLocal uses local date, not UTC (UTC+10 06:30 = UTC previous day)', () => {
   expect(todayLocal(new Date('2026-10-25T20:30:00Z'))).toBe('2026-10-26');
 });
 test('weekStartOf returns Monday', () => {

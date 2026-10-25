@@ -58,7 +58,7 @@ export interface Library {
 
 export interface PlannedMeal {
   id: string; date: ISODate; slot: MealSlot; time: HHMM; recipeId: string;
-  /** Ben's serves. */
+  /** Your own serves. */
   portion: number;
   /** Guest serves at 1.0 each. */
   guests: number;

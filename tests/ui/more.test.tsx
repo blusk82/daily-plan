@@ -104,9 +104,9 @@ test('importing a valid pack switches the library', async () => {
   await freshApp();
   await tab('More');
   await userEvent.click(await screen.findByRole('button', { name: 'Library' }));
-  upload(await screen.findByLabelText('Import library file'), JSON.stringify({ ...SAMPLE_PACK, isSample: false, label: 'Ben library v1' }));
-  expect(await screen.findByText('Imported “Ben library v1”.')).toBeInTheDocument();
-  await waitFor(async () => expect((await getLibrary()).label).toBe('Ben library v1'));
+  upload(await screen.findByLabelText('Import library file'), JSON.stringify({ ...SAMPLE_PACK, isSample: false, label: 'My library v1' }));
+  expect(await screen.findByText('Imported “My library v1”.')).toBeInTheDocument();
+  await waitFor(async () => expect((await getLibrary()).label).toBe('My library v1'));
 });
 
 test('adding a recipe puts it in the library', async () => {

@@ -1,6 +1,6 @@
 import type { HHMM, ISODate } from './types';
 
-// All dates are local calendar dates. Never use toISOString(): in Queensland
+// All dates are local calendar dates. Never use toISOString(): in UTC+10
 // (UTC+10) it reports yesterday's date before 10am.
 
 const pad = (n: number) => String(n).padStart(2, '0');

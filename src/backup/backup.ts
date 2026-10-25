@@ -75,7 +75,7 @@ export async function importBackup(json: string): Promise<{ ok: true } | { ok: f
   return { ok: true };
 }
 
-/** Bring in a library file (recipes, exercises, routine, rules). Ben's own changes are kept. */
+/** Bring in a library file (recipes, exercises, routine, rules). Your own changes are kept. */
 export async function importPack(json: string): Promise<{ ok: true; label: string } | { ok: false; error: string }> {
   let raw: unknown;
   try { raw = JSON.parse(json); } catch { return { ok: false, error: 'This file isn’t a library file.' }; }
@@ -91,7 +91,7 @@ export async function importPack(json: string): Promise<{ ok: true; label: strin
 
 /**
  * iPhone: the share sheet (Files, iCloud Drive, OneDrive, Mail). Elsewhere: a download.
- * Returns false if Ben cancelled the share sheet.
+ * Returns false if the share sheet was cancelled.
  */
 export async function shareOrDownload(filename: string, json: string): Promise<boolean> {
   const file = new File([json], filename, { type: 'application/json' });

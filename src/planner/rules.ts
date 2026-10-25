@@ -10,7 +10,7 @@ export function dayTarget(date: ISODate, settings: Pick<Settings, 'baseKcal'>, i
   return settings.baseKcal + (inputs.higherBurn[date] ?? 0);
 }
 
-/** What Ben eats from this meal. */
+/** What you eat from this meal. */
 export function mealNutrition(meal: PlannedMeal, lib: Library): Nutrition {
   const r = lib.recipes.get(meal.recipeId);
   if (meal.eatingOut || !r) return ZERO;
@@ -33,7 +33,7 @@ function rangeMiss(label: string, value: number, min?: number, max?: number, uni
   return undefined;
 }
 
-/** Target for the meals Ben eats at home: eating-out slots take their share away. */
+/** Target for the meals eaten at home: eating-out slots take their share away. */
 export function homeTarget(target: number, meals: PlannedMeal[], shares: Record<MealSlot, number>): number {
   const away = meals.filter(m => m.eatingOut).reduce((a, m) => a + shares[m.slot], 0);
   return Math.round(target * (1 - away));

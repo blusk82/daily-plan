@@ -24,7 +24,7 @@ export function More() {
     <>
       <Header date="Daily Plan" title="More" />
       <div className="card">
-        {item('summary', 'Appointment summary', 'Exercise done, skipped, why, and pain — to show your physio')}
+        {item('summary', 'Appointment summary', 'Exercise done, skipped, why, and pain — to show your practitioner')}
         {item('library', 'Library', lib.label)}
         {item('settings', 'Settings', 'Times, calorie target, shop day, backup')}
       </div>

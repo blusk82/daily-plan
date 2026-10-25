@@ -68,7 +68,7 @@ test('leftover chain never exceeds the recipe serves', () => {
     expect(serves).toBeLessThanOrEqual(lib.recipes.get(src.recipeId)!.serves + 1e-9);
   }
 });
-test('guests do not change Ben’s portion range and are recorded', () => {
+test('guests do not change your portion range and are recorded', () => {
   const r = planWeek(ctx({ inputs: { guests: { [`${FRI}|dinner`]: 2 } } }));
   const m = r.meals.find(m => m.date === FRI && m.slot === 'dinner')!;
   expect(m.guests).toBe(2);

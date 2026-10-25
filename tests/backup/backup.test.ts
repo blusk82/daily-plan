@@ -45,8 +45,8 @@ test('newer schemaVersion is rejected with a clear message', async () => {
 
 test('importPack stores a real pack and keeps overlay hidden recipes and on/off settings', async () => {
   await saveOverlay({ ...(await getOverlay()), hiddenRecipeIds: ['b-smoothie'], routineOverrides: { 'chin-tuck': { active: false } } });
-  const mine = { ...structuredClone(SAMPLE_PACK), isSample: false, label: 'Ben’s library v1' };
-  expect(await importPack(JSON.stringify(mine))).toEqual({ ok: true, label: 'Ben’s library v1' });
+  const mine = { ...structuredClone(SAMPLE_PACK), isSample: false, label: 'My library v1' };
+  expect(await importPack(JSON.stringify(mine))).toEqual({ ok: true, label: 'My library v1' });
   const lib = await getLibrary();
   expect(lib.isSample).toBe(false);
   expect(lib.hiddenRecipeIds.has('b-smoothie')).toBe(true);

@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
-// Ben is in Queensland; run tests in his timezone so local-date bugs show up.
+// Run tests in a UTC+10 timezone so local-date bugs (UTC is still yesterday before 10am) show up.
 process.env.TZ = 'Australia/Brisbane';
 
 // GitHub Pages serves the app from /<repo>/; the deploy workflow sets BASE_PATH.

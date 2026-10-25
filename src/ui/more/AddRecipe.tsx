@@ -16,7 +16,7 @@ function Num({ label, value, set }: { label: string; value: string; set: (v: str
   );
 }
 
-/** The one place typing is expected — and it's optional. Saved to Ben's own additions. */
+/** The one place typing is expected — and it's optional. Saved to your own additions. */
 export function AddRecipe({ onClose }: { onClose: () => void }) {
   const { lib, refresh } = useData();
   const [name, setName] = useState('');

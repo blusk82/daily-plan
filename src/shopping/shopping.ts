@@ -11,7 +11,7 @@ const EARLIEST_SHOP = '10:00';
 /** Is this a meal that gets cooked (not leftovers, not eaten out)? */
 export const isCooked = (m: PlannedMeal) => !m.eatingOut && !m.leftoverOf && !!m.recipeId;
 
-/** Serves to cook for this meal: Ben, guests, and every leftover meal it feeds (with its guests). */
+/** Serves to cook for this meal: you, guests, and every leftover meal it feeds (with its guests). */
 export function servesCooked(meal: PlannedMeal, meals: PlannedMeal[]): number {
   return meal.portion + meal.guests + meals.filter(l => l.leftoverOf === meal.id).reduce((a, l) => a + l.portion + l.guests, 0);
 }

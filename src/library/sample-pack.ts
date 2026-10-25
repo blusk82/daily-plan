@@ -1,6 +1,6 @@
 import type { Exercise, Ingredient, LibraryPack, MealSlot, Recipe, RoutineItem } from '../domain/types';
 
-// SAMPLE library for development and testing only. It is not Ben's plan:
+// SAMPLE library for development and testing only. It is not your plan:
 // the real recipes, exercises and balance rules come from his books and
 // arrive as an imported library file. Every name is prefixed "Sample: ".
 

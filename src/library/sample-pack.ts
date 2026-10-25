@@ -78,6 +78,10 @@ const recipes: Recipe[] = [
     ingredients: [i('eggs', 3), i('capsicum', 0.5), i('feta', 30), i('spinach', 30)], tags: ['veg'] }),
   rec({ id: 'b-smoothie', name: 'Sample: Banana oat smoothie', slots: s('breakfast'), serves: 1, perServe: n(430, 28, 62, 9), prepMins: 5, quick: true,
     ingredients: [i('milk', 300), i('banana', 1), i('oats', 30), i('greek-yoghurt', 100)] }),
+  rec({ id: 'b-egg-muffin', name: 'Sample: Egg & tomato breakfast muffin', slots: s('breakfast'), serves: 1, perServe: n(410, 27, 34, 17), prepMins: 10, quick: true,
+    ingredients: [i('eggs', 2), i('bread', 70), i('tomato', 1), i('spinach', 20)] }),
+  rec({ id: 'b-porridge', name: 'Sample: Protein porridge with banana', slots: s('breakfast'), serves: 1, perServe: n(440, 29, 60, 9), prepMins: 10, quick: true,
+    ingredients: [i('oats', 50), i('milk', 250), i('greek-yoghurt', 80), i('banana', 0.5)] }),
   // Lunches
   rec({ id: 'l-tuna-chickpea', name: 'Sample: Tuna & chickpea salad', slots: s('lunch'), serves: 1, perServe: n(480, 40, 38, 16), prepMins: 10, quick: true,
     ingredients: [i('tuna', 185), i('chickpeas-tin', 200), i('lettuce', 80), i('cucumber', 0.5), i('tomato', 1), i('lemon', 0.5)], tags: ['fish', 'veg'] }),
@@ -91,6 +95,10 @@ const recipes: Recipe[] = [
     ingredients: [i('quinoa', 70), i('feta', 40), i('zucchini', 1), i('capsicum', 1)], tags: ['veg'] }),
   rec({ id: 'l-tofu-bowl', name: 'Sample: Tofu & broccoli rice bowl', slots: s('lunch'), serves: 1, perServe: n(520, 30, 60, 16), prepMins: 20, quick: true,
     ingredients: [i('tofu', 150), i('rice', 70), i('broccoli', 100)], tags: ['veg'] }),
+  rec({ id: 'l-salmon-rice', name: 'Sample: Salmon & cucumber rice salad', slots: s('lunch'), serves: 1, perServe: n(530, 36, 52, 18), prepMins: 15, quick: true,
+    ingredients: [i('salmon', 120), i('rice', 60), i('cucumber', 0.5), i('lemon', 0.5)], tags: ['fish', 'veg'] }),
+  rec({ id: 'l-cottage-wrap', name: 'Sample: Cottage cheese & veg wrap', slots: s('lunch'), serves: 1, perServe: n(440, 32, 44, 13), prepMins: 10, quick: true,
+    ingredients: [i('wrap', 1), i('cottage-cheese', 120), i('capsicum', 0.5), i('lettuce', 40)], tags: ['veg'] }),
   // Dinners
   rec({ id: 'd-lemon-salmon', name: 'Sample: Lemon salmon, greens & rice', slots: s('dinner'), serves: 2, perServe: n(600, 40, 55, 22), prepMins: 25, quick: true,
     ingredients: [i('salmon', 300), i('rice', 140), i('broccoli', 200), i('lemon', 1)], tags: ['fish', 'veg'] }),

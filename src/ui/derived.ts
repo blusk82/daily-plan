@@ -20,3 +20,13 @@ export function completionOf(completions: Completion[], itemId: string, date: IS
 }
 
 export const nowStamp = () => new Date().toISOString();
+
+/** FileReader rather than Blob.text(): works on older iOS Safari too. */
+export function readFileText(file: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result));
+    r.onerror = () => reject(r.error);
+    r.readAsText(file);
+  });
+}

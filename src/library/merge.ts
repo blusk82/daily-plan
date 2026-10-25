@@ -22,7 +22,7 @@ export function buildLibrary(pack: LibraryPack, overlay: UserOverlay): Library {
   for (const e of overlay.userExercises) {
     const o = overlay.routineOverrides[e.id];
     if (o && !routine.some(r => r.exerciseId === e.id)) {
-      routine.push({ exerciseId: e.id, session: 'morning', timesPerWeek: o.timesPerWeek ?? 3, active: o.active ?? true });
+      routine.push({ exerciseId: e.id, session: o.session ?? 'morning', timesPerWeek: o.timesPerWeek ?? 3, active: o.active ?? true });
     }
   }
 

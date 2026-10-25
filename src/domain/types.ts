@@ -47,7 +47,7 @@ export interface LibraryPack {
 }
 export interface UserOverlay {
   hiddenRecipeIds: string[];
-  routineOverrides: Record<string, { active?: boolean; timesPerWeek?: number }>;
+  routineOverrides: Record<string, { active?: boolean; timesPerWeek?: number; session?: SessionSlot }>;
   userRecipes: Recipe[]; userExercises: Exercise[]; userIngredients: Ingredient[];
 }
 export interface Library {

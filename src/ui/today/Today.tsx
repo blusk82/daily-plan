@@ -4,6 +4,7 @@ import { addDays, longDate, nowTime, weekStartOf } from '../../domain/dates';
 import type { Completion, HHMM, ItemKind, PlannedExercise } from '../../domain/types';
 import { exerciseItemId, progressionNotes } from '../../planner/exercisePlanner';
 import { buildTimeline, currentItemId, type TimelineItem } from '../../timeline/timeline';
+import { Banners } from '../Banners';
 import { Header } from '../components';
 import { useData } from '../data';
 import { completionOf, nowStamp, upcomingPreps, upcomingTrips } from '../derived';
@@ -116,6 +117,7 @@ export function Today() {
       <Header date={longDate(today)} title="Today">
         <RecoveryPicker value={recovery} onChange={chooseRecovery} />
       </Header>
+      <Banners />
       {recovery === 'red' && (
         <div className="banner red" role="note">
           <span>{fullSession ? 'Red recovery — full session chosen.' : 'Red recovery — lighter session suggested.'}</span>

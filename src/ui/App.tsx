@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import type { ISODate } from '../domain/types';
-import { Banners } from './Banners';
 import { DataProvider, useData } from './data';
 import { Nav, type Tab } from './Nav';
 import { Setup } from './Setup';
 import { Today } from './today/Today';
 import { Week } from './week/Week';
+import { Shop } from './shop/Shop';
+import { Pantry } from './pantry/Pantry';
+import { More } from './more/More';
 import './theme.css';
-
-function Placeholder({ title }: { title: string }) {
-  return <h1 style={{ padding: 18 }}>{title}</h1>;
-}
 
 function Shell() {
   const { settings } = useData();
@@ -21,10 +19,9 @@ function Shell() {
       <main className="screen">
         {tab === 'today' && <Today />}
         {tab === 'week' && <Week />}
-        {tab === 'shop' && <Placeholder title="Shop" />}
-        {tab === 'pantry' && <Placeholder title="Pantry" />}
-        {tab === 'more' && <Placeholder title="More" />}
-        <Banners />
+        {tab === 'shop' && <Shop />}
+        {tab === 'pantry' && <Pantry />}
+        {tab === 'more' && <More />}
       </main>
       <Nav tab={tab} onTab={setTab} />
     </>

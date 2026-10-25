@@ -105,6 +105,7 @@ test('hidden recipes are never chosen', () => {
   expect(meals.some(m => m.recipeId === 'd-lemon-salmon' || m.recipeId === 'b-yoghurt-oats')).toBe(false);
 });
 test('runs in under 300 ms with the sample pack', () => {
+  planWeek(ctx({ seed: 2 })); // warm up (JIT) so parallel test load doesn't skew the timing
   const t0 = performance.now(); planWeek(ctx()); expect(performance.now() - t0).toBeLessThan(300);
 });
 // Review Focus 2

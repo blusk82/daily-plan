@@ -9,6 +9,8 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
+    // Forked workers race on Windows temp files (EBUSY); threads share memory instead.
+    pool: 'threads',
     globals: true,
     setupFiles: ['./tests/setup.ts'],
     env: { TZ: 'Australia/Brisbane' },

@@ -23,7 +23,7 @@ test('day-macro protein min reports a violation', () => {
   expect(v).toEqual(['Protein 18% (min 25%)']);
 });
 test('meal-tag-required flags a dinner without veg', () => {
-  const ms = [...mealsTotalling(1200), meal(MON, 'dinner', 'noveg', 6)].filter((m, i) => i !== 2);
+  const ms = [...mealsTotalling(1200), meal(MON, 'dinner', 'noveg', 6)].filter((_, i) => i !== 2);
   expect(checkDay(MON, ms, 1800, lib).violations).toContain('Dinner missing veg');
 });
 test('week-tag-count fish min 2 counts leftovers', () => {

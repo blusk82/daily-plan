@@ -90,6 +90,7 @@ test('Confirm and save backup confirms the week and records the backup', async (
   await userEvent.click(screen.getByRole('button', { name: 'Confirm and save backup' }));
   await waitFor(async () => expect((await getWeek(NEXT))!.status).toBe('confirmed'));
   await waitFor(async () => expect((await getSettings()).lastBackupAt).toBeDefined());
+  await screen.findByRole('button', { name: 'Plan next week' }); // back on the overview: all saving finished
 });
 
 test('a broken leftover shows the re-plan prompt and re-planning clears it', async () => {

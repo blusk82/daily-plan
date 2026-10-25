@@ -11,6 +11,9 @@ export async function freshApp(
   today = TODAY,
   seed?: () => Promise<void>,
 ) {
+  // Let any background loading from the previous test finish, so its writes
+  // can't land after this test's reset and seed.
+  await new Promise(r => setTimeout(r, 150));
   await resetDb();
   await saveSettings({ ...DEFAULT_SETTINGS, ...settings });
   if (seed) await seed();

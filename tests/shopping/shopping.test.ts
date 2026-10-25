@@ -39,8 +39,9 @@ test('main shop is the Sunday before a Monday week, by 17:00', () => {
   expect(buildShoppingTrips(plan([traybake]), lib, [], SETTINGS).find(t => t.kind === 'main'))
     .toMatchObject({ id: '2026-10-25:main', date: '2026-10-25', byTime: '17:00', reason: 'Main shop' });
 });
-test('main shop on Saturday when that is the shop day', () => {
-  expect(buildShoppingTrips(plan([traybake]), lib, [], { ...SETTINGS, shopDay: 6 }).find(t => t.kind === 'main')!.date).toBe('2026-10-24');
+test('main shop on the Saturday inside the week when that is the shop day', () => {
+  const sat = { ...meal('2026-10-31', 'dinner', 'd-bolognese'), time: '18:30' };
+  expect(buildShoppingTrips(plan([sat]), lib, [], { ...SETTINGS, shopDay: 6 }).find(t => t.kind === 'main')!.date).toBe('2026-10-31');
 });
 test('salmon (keeps 2 days) for Friday dinner gets a Friday top-up by 17:00', () => {
   const trips = buildShoppingTrips(plan([at(meal(FRI, 'dinner', 'd-lemon-salmon', 1, { guests: 1 }), '18:30')]), lib, [], SETTINGS);

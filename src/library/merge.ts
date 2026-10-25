@@ -6,15 +6,14 @@ export function emptyOverlay(): UserOverlay {
 
 /**
  * The library the app works from: the imported pack plus Ben's own overlay.
- * Hidden recipes are left out; retired ones stay (planners skip them) so
- * existing plans can still show them.
+ * Hidden and retired recipes both stay (planners skip them) so existing
+ * plans can still show them.
  */
 export function buildLibrary(pack: LibraryPack, overlay: UserOverlay): Library {
   const hidden = new Set(overlay.hiddenRecipeIds);
   const ingredients = new Map([...pack.ingredients, ...overlay.userIngredients].map(i => [i.id, i]));
-  const recipes = new Map(
-    [...pack.recipes, ...overlay.userRecipes].filter(r => !hidden.has(r.id)).map(r => [r.id, r]),
-  );
+  // Hidden recipes stay in the map so planned meals keep working; planners skip them.
+  const recipes = new Map([...pack.recipes, ...overlay.userRecipes].map(r => [r.id, r]));
   const exercises = new Map([...pack.exercises, ...overlay.userExercises].map(e => [e.id, e]));
 
   const routine = pack.routine.map(r => ({ ...r, ...overlay.routineOverrides[r.exerciseId] }));

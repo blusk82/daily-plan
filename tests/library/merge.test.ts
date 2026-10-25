@@ -5,7 +5,8 @@ test('buildLibrary hides recipes and applies routine overrides', () => {
   const ov = { ...emptyOverlay(), hiddenRecipeIds: [SAMPLE_PACK.recipes[0].id],
     routineOverrides: { [SAMPLE_PACK.routine[0].exerciseId]: { active: false, timesPerWeek: 2 } } };
   const lib = buildLibrary(SAMPLE_PACK, ov);
-  expect(lib.recipes.has(SAMPLE_PACK.recipes[0].id)).toBe(false);
+  // Hidden recipes stay available to planned meals; only the planners skip them.
+  expect(lib.recipes.has(SAMPLE_PACK.recipes[0].id)).toBe(true);
   expect(lib.hiddenRecipeIds.has(SAMPLE_PACK.recipes[0].id)).toBe(true);
   const r = lib.routine.find(r => r.exerciseId === SAMPLE_PACK.routine[0].exerciseId)!;
   expect(r.active).toBe(false);

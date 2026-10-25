@@ -15,15 +15,18 @@ async function dumpAll() {
   return { kv: await db.kv.toArray(), weeks: await db.weeks.toArray(), completions: await db.completions.toArray(), pantry: await db.pantry.toArray() };
 }
 
-test('export → wipe → import round-trips everything', async () => {
+test('export → wipe → import round-trips everything (the file carries its own backup time)', async () => {
   await seed();
-  const { filename, json } = await exportBackup();
+  const { filename, json, stamp } = await exportBackup();
   expect(filename).toMatch(/^daily-plan-backup-\d{4}-\d{2}-\d{2}\.json$/);
   const before = await dumpAll();
-  expect((await getSettings()).lastBackupAt).toBeDefined();
   await resetDb();
   expect(await importBackup(json)).toEqual({ ok: true });
-  expect(await dumpAll()).toEqual(before);
+  const after = await dumpAll();
+  expect(after.weeks).toEqual(before.weeks);
+  expect(after.completions).toEqual(before.completions);
+  expect(after.pantry).toEqual(before.pantry);
+  expect((await getSettings()).lastBackupAt).toBe(stamp);
 });
 
 test('corrupt backup is rejected and existing data is untouched', async () => {
@@ -46,7 +49,7 @@ test('importPack stores a real pack and keeps overlay hidden recipes and on/off 
   expect(await importPack(JSON.stringify(mine))).toEqual({ ok: true, label: 'Ben’s library v1' });
   const lib = await getLibrary();
   expect(lib.isSample).toBe(false);
-  expect(lib.recipes.has('b-smoothie')).toBe(false);
+  expect(lib.hiddenRecipeIds.has('b-smoothie')).toBe(true);
   expect(lib.routine.find(r => r.exerciseId === 'chin-tuck')!.active).toBe(false);
 });
 

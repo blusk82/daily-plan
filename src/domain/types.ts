@@ -93,7 +93,10 @@ export type ItemKind = 'meal' | 'session' | 'exercise' | 'shop' | 'shop-item' | 
 export interface Completion {
   itemId: string; kind: ItemKind; date: ISODate; status: 'done' | 'not-done';
   reason?: Reason; otherText?: string; pain?: number; area?: BodyArea; at: string;
-  /** Pantry changes made when a meal was ticked, so un-ticking can restore them. */
+  /**
+   * What ticking a meal took from the pantry, so un-ticking can give it back:
+   * qty is the amount used, or null when an item with no amount was used up.
+   */
   pantryDelta?: { ingredientId: string; qty: number | null; useUp: boolean }[];
 }
 export type Recovery = 'green' | 'yellow' | 'red';

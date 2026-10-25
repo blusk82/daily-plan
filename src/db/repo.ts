@@ -111,9 +111,16 @@ async function usePantryFor(itemId: string, date: ISODate): Promise<Completion['
   for (const { ingredientId, qty } of mealIngredients(meal, week.meals, lib)) {
     const p = await db.pantry.get(ingredientId);
     if (!p) continue;
-    delta.push({ ingredientId, qty: p.qty ?? null, useUp: p.useUp });
-    if (p.qty === undefined || p.qty - qty <= 1e-9) await db.pantry.delete(ingredientId);
-    else await db.pantry.put({ ...p, qty: Math.round((p.qty - qty) * 1000) / 1000 });
+    if (p.qty === undefined) {
+      delta.push({ ingredientId, qty: null, useUp: p.useUp });
+      await db.pantry.delete(ingredientId);
+      continue;
+    }
+    const used = Math.min(p.qty, qty);
+    delta.push({ ingredientId, qty: used, useUp: p.useUp });
+    const left = Math.round((p.qty - used) * 1000) / 1000;
+    if (left <= 0) await db.pantry.delete(ingredientId);
+    else await db.pantry.put({ ...p, qty: left });
   }
   return delta.length ? delta : undefined;
 }
@@ -127,16 +134,6 @@ export async function setCompletion(c: Completion): Promise<void> {
       if (delta) record.pantryDelta = delta;
     }
     await db.completions.put(record);
-    if (c.kind === 'session' && c.status === 'done') {
-      const week = await weekContaining(c.date);
-      const session = week?.sessions.find(s => s.id === c.itemId);
-      for (const e of session?.exercises ?? []) {
-        const id = `${c.itemId}:${e.exerciseId}`;
-        if (!(await db.completions.get([id, c.date]))) {
-          await db.completions.put({ itemId: id, kind: 'exercise', date: c.date, status: 'done', at: c.at });
-        }
-      }
-    }
   });
 }
 
@@ -144,15 +141,18 @@ export async function clearCompletion(itemId: string, date: ISODate): Promise<vo
   await db.transaction('rw', db.completions, db.pantry, async () => {
     const c = await db.completions.get([itemId, date]);
     if (!c) return;
+    // Give back what this tick used, on top of whatever is there now.
     for (const d of c.pantryDelta ?? []) {
-      await db.pantry.put(d.qty === null ? { ingredientId: d.ingredientId, useUp: d.useUp } : { ingredientId: d.ingredientId, qty: d.qty, useUp: d.useUp });
+      const now = await db.pantry.get(d.ingredientId);
+      if (d.qty === null) {
+        if (!now) await db.pantry.put({ ingredientId: d.ingredientId, useUp: d.useUp });
+      } else if (!now) {
+        await db.pantry.put({ ingredientId: d.ingredientId, qty: d.qty, useUp: d.useUp });
+      } else if (now.qty !== undefined) {
+        await db.pantry.put({ ...now, qty: Math.round((now.qty + d.qty) * 1000) / 1000 });
+      }
     }
     await db.completions.delete([itemId, date]);
-    if (c.kind === 'session' && c.status === 'done') {
-      const children = await db.completions.where('date').equals(date)
-        .filter(x => x.kind === 'exercise' && x.status === 'done' && x.itemId.startsWith(`${itemId}:`)).toArray();
-      await db.completions.bulkDelete(children.map(x => [x.itemId, x.date] as [string, string]));
-    }
   });
 }
 

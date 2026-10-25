@@ -11,9 +11,9 @@ const EARLIEST_SHOP = '10:00';
 /** Is this a meal that gets cooked (not leftovers, not eaten out)? */
 export const isCooked = (m: PlannedMeal) => !m.eatingOut && !m.leftoverOf && !!m.recipeId;
 
-/** Serves to cook for this meal: Ben, guests, and every leftover meal it feeds. */
+/** Serves to cook for this meal: Ben, guests, and every leftover meal it feeds (with its guests). */
 export function servesCooked(meal: PlannedMeal, meals: PlannedMeal[]): number {
-  return meal.portion + meal.guests + meals.filter(l => l.leftoverOf === meal.id).reduce((a, l) => a + l.portion, 0);
+  return meal.portion + meal.guests + meals.filter(l => l.leftoverOf === meal.id).reduce((a, l) => a + l.portion + l.guests, 0);
 }
 
 /** Ingredient quantities for cooking one meal, in base units. */
@@ -34,9 +34,14 @@ export function formatQty(qty: number, unit: Unit): string {
   return `${rounded} ${unit}`;
 }
 
-/** The main shop: the most recent shop day on or before the week's Monday. */
+/**
+ * The main shop: the first shop day from the planning Sunday (the day before
+ * the week) onwards, so it is never in the past when the week is planned.
+ * Meals before it get their own top-up trips.
+ */
 export function mainShopDate(weekStart: ISODate, shopDay: number): ISODate {
-  return addDays(weekStart, -((weekday(weekStart) - shopDay + 7) % 7));
+  const sunday = addDays(weekStart, -1);
+  return addDays(sunday, (shopDay - weekday(sunday) + 7) % 7);
 }
 
 function reasonFor(tripDate: ISODate, m: PlannedMeal): string {
@@ -76,7 +81,9 @@ export function buildShoppingTrips(plan: WeekPlan, lib: Library, pantry: PantryI
   for (const n of needs) {
     const ing = lib.ingredients.get(n.ingredientId)!;
     let trip: ShopTrip;
-    if (ing.keepsDays >= daysBetween(mainDate, n.meal.date)) {
+    const gap = daysBetween(mainDate, n.meal.date);
+    const beforeMain = gap < 0 || (gap === 0 && toMinutes(n.meal.time) < toMinutes(MAIN_SHOP_TIME));
+    if (!beforeMain && ing.keepsDays >= gap) {
       trip = tripFor(mainDate, 'main', MAIN_SHOP_TIME, 'Main shop');
     } else {
       const by = addMinutes(n.meal.date, n.meal.time, -TOP_UP_LEAD_MINS);
@@ -95,5 +102,24 @@ export function buildShoppingTrips(plan: WeekPlan, lib: Library, pantry: PantryI
     l.qty = Math.round(l.qty * 1000) / 1000;
     l.display = formatQty(l.qty, l.unit);
   }
+  return out.sort((a, b) => a.date.localeCompare(b.date) || toMinutes(a.byTime) - toMinutes(b.byTime));
+}
+
+/** Trips from different weeks can fall on the same day: show them as one. */
+export function mergeTrips(trips: ShopTrip[]): ShopTrip[] {
+  const byId = new Map<string, ShopTrip>();
+  for (const t of trips) {
+    const seen = byId.get(t.id);
+    if (!seen) { byId.set(t.id, { ...t, lines: t.lines.map(l => ({ ...l, neededBy: { ...l.neededBy } })) }); continue; }
+    if (toMinutes(t.byTime) < toMinutes(seen.byTime)) { seen.byTime = t.byTime; seen.reason = t.reason; }
+    for (const l of t.lines) {
+      const same = seen.lines.find(x => x.ingredientId === l.ingredientId);
+      if (!same) { seen.lines.push({ ...l, neededBy: { ...l.neededBy } }); continue; }
+      same.qty = Math.round((same.qty + l.qty) * 1000) / 1000;
+      if (l.neededBy.date < same.neededBy.date) same.neededBy = { ...l.neededBy };
+    }
+  }
+  const out = [...byId.values()];
+  for (const t of out) for (const l of t.lines) l.display = formatQty(l.qty, l.unit);
   return out.sort((a, b) => a.date.localeCompare(b.date) || toMinutes(a.byTime) - toMinutes(b.byTime));
 }

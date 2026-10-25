@@ -71,13 +71,23 @@ export function Today() {
   const current = currentItemId(items, todays, nowTime());
   const statusOf = (id: string) => completionOf(completions, id, today);
 
+  /**
+   * Ticking a session or shop trip ticks the items shown under it (a red-day
+   * session only covers the lighter exercises). Undo removes only the ticks
+   * that the same tap made, so items ticked one by one are kept.
+   */
   async function toggle(itemId: string, kind: ItemKind, children: string[] = [], childKind?: ItemKind) {
-    if (statusOf(itemId)?.status === 'done') {
+    const current = statusOf(itemId);
+    if (current?.status === 'done') {
       await clearCompletion(itemId, today);
-      for (const c of children) if (statusOf(c)?.status === 'done') await clearCompletion(c, today);
+      for (const c of children) {
+        const cc = statusOf(c);
+        if (cc?.status === 'done' && cc.at === current.at) await clearCompletion(c, today);
+      }
     } else {
-      await setCompletion({ itemId, kind, date: today, status: 'done', at: nowStamp() });
-      for (const c of children) await setCompletion({ itemId: c, kind: childKind!, date: today, status: 'done', at: nowStamp() });
+      const at = nowStamp();
+      await setCompletion({ itemId, kind, date: today, status: 'done', at });
+      for (const c of children) if (!statusOf(c)) await setCompletion({ itemId: c, kind: childKind!, date: today, status: 'done', at });
     }
     await refresh();
   }

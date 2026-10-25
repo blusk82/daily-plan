@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { importBackup } from '../../backup/backup';
 import { saveSettings } from '../../db/repo';
 import type { Settings } from '../../domain/types';
@@ -17,6 +17,13 @@ export function SettingsScreen({ onBack }: { onBack: () => void }) {
   const [pendingRestore, setPendingRestore] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const kcal = Number(kcalText), burn = Number(burnText);
+
+  // Reload the form whenever stored settings change (e.g. after a restore).
+  useEffect(() => {
+    setS(settings);
+    setKcalText(String(settings.baseKcal));
+    setBurnText(String(settings.higherBurnKcal));
+  }, [settings]);
   const valid = kcal >= 1000 && kcal <= 4000 && burn >= 0 && burn <= 2000;
 
   async function save() {

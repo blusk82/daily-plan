@@ -86,9 +86,9 @@ test('hiding and unhiding a recipe from the library', async () => {
   await tab('More');
   await userEvent.click(await screen.findByRole('button', { name: 'Library' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Hide Sample: Banana oat smoothie' }));
-  await waitFor(async () => expect((await getLibrary()).recipes.has('b-smoothie')).toBe(false));
+  await waitFor(async () => expect((await getLibrary()).hiddenRecipeIds.has('b-smoothie')).toBe(true));
   await userEvent.click(await screen.findByRole('button', { name: 'Unhide Sample: Banana oat smoothie' }));
-  await waitFor(async () => expect((await getLibrary()).recipes.has('b-smoothie')).toBe(true));
+  await waitFor(async () => expect((await getLibrary()).hiddenRecipeIds.has('b-smoothie')).toBe(false));
 });
 
 test('importing an invalid pack shows the error and keeps the old library', async () => {

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { db } from '../db/db';
-import { allWeeks, getSettings, getStoredPack, saveSettings, savePack } from '../db/repo';
+import { allWeeks, getPack, getSettings, saveSettings, savePack } from '../db/repo';
 import { daysBetween, nowTime, todayLocal } from '../domain/dates';
 import type { ISODate, Settings } from '../domain/types';
 import { mergePack } from '../library/merge';
@@ -33,14 +33,25 @@ const backupSchema = z.object({
   pantry: z.array(z.object({ ingredientId: z.string(), useUp: z.boolean() }).passthrough()),
 });
 
-export async function exportBackup(): Promise<{ filename: string; json: string }> {
+/**
+ * Build the backup file. The phone's "last backup" is only updated once the
+ * file has actually been shared or saved (markBackedUp); the file itself
+ * carries the time so a restore doesn't nag straight away.
+ */
+export async function exportBackup(): Promise<{ filename: string; json: string; stamp: string }> {
   const today = todayLocal();
-  await saveSettings({ ...(await getSettings()), lastBackupAt: `${today}T${nowTime()}:00` });
+  const stamp = `${today}T${nowTime()}:00`;
+  const kv = (await db.kv.toArray()).filter(k => k.key !== 'settings');
+  kv.push({ key: 'settings', value: { ...(await getSettings()), lastBackupAt: stamp } });
   const data = {
     app: 'daily-plan', schemaVersion: SCHEMA_VERSION, exportedAt: new Date().toISOString(),
-    kv: await db.kv.toArray(), weeks: await db.weeks.toArray(), completions: await db.completions.toArray(), pantry: await db.pantry.toArray(),
+    kv, weeks: await db.weeks.toArray(), completions: await db.completions.toArray(), pantry: await db.pantry.toArray(),
   };
-  return { filename: `daily-plan-backup-${today}.json`, json: JSON.stringify(data) };
+  return { filename: `daily-plan-backup-${today}.json`, json: JSON.stringify(data), stamp };
+}
+
+export async function markBackedUp(stamp: string): Promise<void> {
+  await saveSettings({ ...(await getSettings()), lastBackupAt: stamp });
 }
 
 /** Everything is checked before anything is written; a bad file changes nothing. */
@@ -73,17 +84,21 @@ export async function importPack(json: string): Promise<{ ok: true; label: strin
   const weeks = await allWeeks();
   const recipeIds = new Set(weeks.flatMap(w => w.meals.map(m => m.recipeId)));
   const exerciseIds = new Set(weeks.flatMap(w => w.sessions.flatMap(s => s.exercises.map(e => e.exerciseId))));
-  await savePack(mergePack((await getStoredPack()) ?? null, r.pack, recipeIds, exerciseIds));
+  // Merge against what is in use now, including the sample pack before the first import.
+  await savePack(mergePack(await getPack(), r.pack, recipeIds, exerciseIds));
   return { ok: true, label: r.pack.label };
 }
 
-/** iPhone: the share sheet (Files, iCloud Drive, OneDrive, Mail). Elsewhere: a download. */
-export async function shareOrDownload(filename: string, json: string): Promise<void> {
+/**
+ * iPhone: the share sheet (Files, iCloud Drive, OneDrive, Mail). Elsewhere: a download.
+ * Returns false if Ben cancelled the share sheet.
+ */
+export async function shareOrDownload(filename: string, json: string): Promise<boolean> {
   const file = new File([json], filename, { type: 'application/json' });
   const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };
   if (nav.canShare?.({ files: [file] }) && nav.share) {
-    try { await nav.share({ files: [file], title: filename }); return; } catch (e) {
-      if ((e as DOMException).name === 'AbortError') return;
+    try { await nav.share({ files: [file], title: filename }); return true; } catch (e) {
+      if ((e as DOMException).name === 'AbortError') return false;
     }
   }
   const url = URL.createObjectURL(file);
@@ -92,6 +107,7 @@ export async function shareOrDownload(filename: string, json: string): Promise<v
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return true;
 }
 
 export function backupDue(settings: Settings, today: ISODate): boolean {

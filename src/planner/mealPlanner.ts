@@ -39,7 +39,7 @@ export function planWeek(ctx: PlanContext): PlanResult {
   const locked = ctx.locked ?? [];
   const lockedKeys = new Set(locked.map(m => (m.slot === 'snack' ? `${m.date}|snack` : slotKey(m.date, m.slot))));
   const eatOut = new Set(inputs.eatOut);
-  const usable = [...lib.recipes.values()].filter(r => !r.retired);
+  const usable = [...lib.recipes.values()].filter(r => !r.retired && !lib.hiddenRecipeIds.has(r.id));
   const bySlot = (slot: MealSlot) => usable.filter(r => r.slots.includes(slot));
   const snacks = bySlot('snack');
   const useUpIds = ctx.pantry.filter(p => p.useUp).map(p => p.ingredientId);
@@ -173,7 +173,7 @@ export function planWeek(ctx: PlanContext): PlanResult {
     for (const src of cooked) {
       const chain = meals.filter(l => l.leftoverOf === src.id);
       if (!chain.length) continue;
-      const serves = src.portion + src.guests + chain.reduce((a, l) => a + l.portion, 0);
+      const serves = src.portion + src.guests + chain.reduce((a, l) => a + l.portion + l.guests, 0);
       if (serves > (recipeOf(src.recipeId)?.serves ?? 0) + 1e-9) score += W.overServed;
     }
     for (const id of useUpIds) {

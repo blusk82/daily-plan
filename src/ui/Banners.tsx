@@ -1,10 +1,12 @@
-import { backupDue, exportBackup, shareOrDownload } from '../backup/backup';
+import { backupDue, exportBackup, markBackedUp, shareOrDownload } from '../backup/backup';
 import { useData } from './data';
 
-export async function saveBackupNow(refresh: () => Promise<void>): Promise<void> {
-  const { filename, json } = await exportBackup();
-  await shareOrDownload(filename, json);
+export async function saveBackupNow(refresh: () => Promise<void>): Promise<boolean> {
+  const { filename, json, stamp } = await exportBackup();
+  const saved = await shareOrDownload(filename, json);
+  if (saved) await markBackedUp(stamp);
   await refresh();
+  return saved;
 }
 
 export function Banners() {

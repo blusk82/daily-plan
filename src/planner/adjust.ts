@@ -15,7 +15,7 @@ export function alternativesFor(plan: WeekPlan, mealId: string, ctx: PlanContext
 
   const scored: { meal: PlannedMeal; score: number }[] = [];
   for (const r of lib.recipes.values()) {
-    if (r.retired || r.id === meal.recipeId || !r.slots.includes(meal.slot)) continue;
+    if (r.retired || lib.hiddenRecipeIds.has(r.id) || r.id === meal.recipeId || !r.slots.includes(meal.slot) || r.perServe.kcal <= 0) continue;
     const raw = (home - othersKcal) / r.perServe.kcal;
     const portion = Math.round(Math.min(lib.rules.portionMax, Math.max(lib.rules.portionMin, raw)) * 20) / 20;
     const candidate: PlannedMeal = { ...meal, recipeId: r.id, portion };

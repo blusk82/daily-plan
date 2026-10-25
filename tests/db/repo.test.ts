@@ -113,15 +113,6 @@ test('re-ticking the same item replaces the previous record', async () => {
   expect(await completionsBetween(MON, MON)).toHaveLength(1);
 });
 
-test('session done marks all its exercises done; clearing it clears them', async () => {
-  await soupWeek();
-  await setCompletion({ itemId: 'sess', kind: 'session', date: MON, status: 'done', at: '' });
-  const cs = await completionsBetween(MON, MON);
-  expect(cs.filter(c => c.kind === 'exercise').map(c => c.itemId).sort()).toEqual(['sess:bridge', 'sess:cat-cow']);
-  await clearCompletion('sess', MON);
-  expect(await completionsBetween(MON, MON)).toEqual([]);
-});
-
 test('single exercise tick does not change the session', async () => {
   await soupWeek();
   await setCompletion({ itemId: 'sess:bridge', kind: 'exercise', date: MON, status: 'not-done', reason: 'pain', pain: 4, area: 'hip', at: '' });

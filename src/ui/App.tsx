@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { ISODate } from '../domain/types';
 import { DataProvider, useData } from './data';
 import { Nav, type Tab } from './Nav';
+import { ErrorBoundary } from './Recovery';
 import { Setup } from './Setup';
 import { Today } from './today/Today';
 import { Week } from './week/Week';
@@ -31,9 +32,11 @@ function Shell() {
 export default function App({ today }: { today?: ISODate }) {
   return (
     <div className="app">
-      <DataProvider today={today}>
-        <Shell />
-      </DataProvider>
+      <ErrorBoundary>
+        <DataProvider today={today}>
+          <Shell />
+        </DataProvider>
+      </ErrorBoundary>
     </div>
   );
 }

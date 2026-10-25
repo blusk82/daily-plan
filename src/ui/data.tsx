@@ -4,6 +4,7 @@ import {
 } from '../db/repo';
 import { addDays, planningWeekStart, todayLocal, weekStartOf, weekday } from '../domain/dates';
 import type { Completion, ISODate, Library, PantryItem, Recovery, Settings, UserOverlay, WeekPlan } from '../domain/types';
+import { RecoveryScreen } from './Recovery';
 
 export interface Data {
   today: ISODate;
@@ -48,11 +49,17 @@ async function load(today: ISODate): Promise<Loaded> {
 export function DataProvider({ children, today: fixedToday }: { children: ReactNode; today?: ISODate }) {
   const [today, setToday] = useState(() => fixedToday ?? todayLocal());
   const [data, setData] = useState<Loaded | null>(null);
+  const [error, setError] = useState<unknown>(null);
 
   const refresh = useCallback(async () => {
     const t = fixedToday ?? todayLocal();
     setToday(t);
-    setData(await load(t));
+    try {
+      setData(await load(t));
+      setError(null);
+    } catch (e) {
+      setError(e);
+    }
   }, [fixedToday]);
 
   useEffect(() => { void refresh(); }, [refresh]);
@@ -65,6 +72,7 @@ export function DataProvider({ children, today: fixedToday }: { children: ReactN
   }, [refresh, today, fixedToday]);
 
   const value = useMemo(() => (data ? { ...data, refresh } : null), [data, refresh]);
+  if (error) return <RecoveryScreen error={error} />;
   if (!value) return <div className="empty" role="status">Loading…</div>;
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

@@ -4,6 +4,7 @@ import { Banners } from './Banners';
 import { DataProvider, useData } from './data';
 import { Nav, type Tab } from './Nav';
 import { Setup } from './Setup';
+import { Today } from './today/Today';
 import './theme.css';
 
 function Placeholder({ title }: { title: string }) {
@@ -17,7 +18,7 @@ function Shell() {
   return (
     <>
       <main className="screen">
-        {tab === 'today' && <Placeholder title="Today" />}
+        {tab === 'today' && <Today />}
         {tab === 'week' && <Placeholder title="Week" />}
         {tab === 'shop' && <Placeholder title="Shop" />}
         {tab === 'pantry' && <Placeholder title="Pantry" />}

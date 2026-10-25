@@ -84,10 +84,12 @@ export async function confirmWeek(weekStart: ISODate): Promise<WeekPlan> {
   return confirmed;
 }
 
-/** Defaults for the next plan: shop day and which weekdays tend to be busy. */
+/**
+ * Defaults for the next plan: shop day and which weekdays tend to be busy,
+ * from the latest week Ben actually planned (default weeks carry no choices).
+ */
 export async function lastInputs(): Promise<{ shopDay?: number; busyWeekdays: number[] }> {
-  const weeks = await db.weeks.orderBy('weekStart').reverse().limit(1).toArray();
-  const w = weeks[0];
+  const w = await db.weeks.orderBy('weekStart').reverse().filter(w => w.status !== 'default').first();
   if (!w) return { busyWeekdays: [] };
   return { shopDay: w.inputs.shopDay, busyWeekdays: [...new Set(w.inputs.busyDates.map(weekday))].sort() };
 }

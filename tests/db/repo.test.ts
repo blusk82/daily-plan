@@ -56,6 +56,12 @@ test('lastInputs carries shop day and busy weekdays from the latest week', async
   expect(await lastInputs()).toEqual({ shopDay: 6, busyWeekdays: [2] });
 });
 
+test('lastInputs ignores later default weeks', async () => {
+  await proposeWeek(inputs({ shopDay: 6, busyDates: [TUE] }), 3);
+  await ensureWeek('2026-11-02', 1);
+  expect(await lastInputs()).toEqual({ shopDay: 6, busyWeekdays: [2] });
+});
+
 async function soupWeek(): Promise<WeekPlan> {
   // Soup serves 4 with 1000 g pumpkin: portion 1.6 → 400 g
   const soup = meal(MON, 'lunch', 'l-pumpkin-soup', 1.6, { id: 'soup' });

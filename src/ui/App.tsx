@@ -5,6 +5,7 @@ import { DataProvider, useData } from './data';
 import { Nav, type Tab } from './Nav';
 import { Setup } from './Setup';
 import { Today } from './today/Today';
+import { Week } from './week/Week';
 import './theme.css';
 
 function Placeholder({ title }: { title: string }) {
@@ -19,7 +20,7 @@ function Shell() {
     <>
       <main className="screen">
         {tab === 'today' && <Today />}
-        {tab === 'week' && <Placeholder title="Week" />}
+        {tab === 'week' && <Week />}
         {tab === 'shop' && <Placeholder title="Shop" />}
         {tab === 'pantry' && <Placeholder title="Pantry" />}
         {tab === 'more' && <Placeholder title="More" />}
